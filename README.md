@@ -1,10 +1,10 @@
 # denctl
 
-**denctl** (🦝) - A Python CLI automation tool for macOS built with Typer.
+**denctl** 🦝 - A Python CLI automation tool for macOS built with Typer.
 
 ## Overview
 
-denctl is a command-line interface application designed to house various automation tasks for local macOS development. Built with modern Python tooling including [uv](https://github.com/astral-sh/uv) for package management and [Typer](https://typer.tiangolo.com/) for CLI functionality.
+**denctl** is a command-line interface application designed to house various automation tasks for local macOS development. Built with modern Python tooling including [uv](https://github.com/astral-sh/uv) for package management and [Typer](https://typer.tiangolo.com/) for CLI functionality.
 
 The tool can be invoked using either `denctl` or `den` for convenience.
 
