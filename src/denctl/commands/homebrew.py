@@ -60,7 +60,8 @@ def check_dependencies():
     # Check if gh is authenticated
     if subprocess.run(["gh", "auth", "status"], capture_output=True).returncode != 0:
         console.print(
-            "[bold red]Error:[/bold red] GitHub CLI is not authenticated. Run 'gh auth login'."
+            "[bold red]Error:[/bold red] GitHub CLI is not authenticated. "
+            "Run 'gh auth login'."
         )
         raise typer.Exit(code=1)
 
@@ -79,7 +80,7 @@ def generate_brewfile() -> str:
         console.print(
             f"[bold red]Error running brew bundle dump:[/bold red] {e.stderr}"
         )
-        raise typer.Exit(code=2)
+        raise typer.Exit(code=2) from e
 
 
 def calculate_hash(content: str) -> str:
@@ -107,15 +108,21 @@ def format_with_claude(content: str, api_key: str) -> str:
     """Format Brewfile content using Anthropic API."""
     client = Anthropic(api_key=api_key)
 
-    system_prompt = """You are a technical documentation expert. Format and document this Homebrew Brewfile.
-
-Instructions:
-1. Add a clear header explaining what this Brewfile is
-2. Group packages into logical categories with headers (e.g., # Development Tools, # System Utilities, # Productivity Apps, # Media & Entertainment, # Design & Creative)
-3. Add brief inline comments explaining what each package/cask does
-4. Keep the exact package names, tap names, and syntax UNCHANGED
-5. Maintain all taps, mas (Mac App Store), and vscode entries exactly as they appear
-6. Return ONLY the formatted Brewfile content with no additional explanations or markdown code blocks"""
+    system_prompt = (
+        "You are a technical documentation expert. "
+        "Format and document this Homebrew Brewfile.\n\n"
+        "Instructions:\n"
+        "1. Add a clear header explaining what this Brewfile is\n"
+        "2. Group packages into logical categories with headers "
+        "(e.g., # Development Tools, # System Utilities, # Productivity Apps, "
+        "# Media & Entertainment, # Design & Creative)\n"
+        "3. Add brief inline comments explaining what each package/cask does\n"
+        "4. Keep the exact package names, tap names, and syntax UNCHANGED\n"
+        "5. Maintain all taps, mas (Mac App Store), and vscode entries "
+        "exactly as they appear\n"
+        "6. Return ONLY the formatted Brewfile content with no additional explanations "
+        "or markdown code blocks"
+    )
 
     try:
         message = client.messages.create(
@@ -135,12 +142,14 @@ Instructions:
 
     except APIError as e:
         console.print(
-            f"[bold yellow]Warning:[/bold yellow] Claude API error: {e}. Using unformatted content."
+            f"[bold yellow]Warning:[/bold yellow] Claude API error: {e}. "
+            "Using unformatted content."
         )
         return content
     except Exception as e:
         console.print(
-            f"[bold yellow]Warning:[/bold yellow] Formatting failed: {e}. Using unformatted content."
+            f"[bold yellow]Warning:[/bold yellow] Formatting failed: {e}. "
+            "Using unformatted content."
         )
         return content
 
@@ -183,7 +192,7 @@ def manage_gist(content: str, config: Dict[str, Any]) -> str:
             return gist_id
         except subprocess.CalledProcessError as e:
             console.print(f"[bold red]Error updating Gist:[/bold red] {e.stderr}")
-            raise typer.Exit(code=3)
+            raise typer.Exit(code=3) from e
 
     else:
         # Create new Gist
@@ -205,7 +214,7 @@ def manage_gist(content: str, config: Dict[str, Any]) -> str:
             return response_data["id"]
         except subprocess.CalledProcessError as e:
             console.print(f"[bold red]Error creating Gist:[/bold red] {e.stderr}")
-            raise typer.Exit(code=3)
+            raise typer.Exit(code=3) from e
 
 
 @app.command()
@@ -252,7 +261,8 @@ def backup(
             final_content = format_with_claude(raw_content, api_key)
         elif not no_format and not api_key:
             console.print(
-                "[yellow]Warning:[/yellow] ANTHROPIC_API_KEY not found. Run 'den auth anthropic' or set env var. Skipping formatting."
+                "[yellow]Warning:[/yellow] ANTHROPIC_API_KEY not found. "
+                "Run 'den auth anthropic' or set env var. Skipping formatting."
             )
 
         # Step 4: Upload
