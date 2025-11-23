@@ -1,4 +1,5 @@
 from typer.testing import CliRunner
+
 from denctl.main import app
 
 runner = CliRunner()
