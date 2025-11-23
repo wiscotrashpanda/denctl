@@ -5,7 +5,7 @@ app = typer.Typer()
 
 @app.callback()
 def callback():
-    """denctl - raccoon's den automation CLI"""
+    """denctl - 🦝 automation CLI"""
     pass
 
 
