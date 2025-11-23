@@ -1,6 +1,6 @@
 # denctl
 
-**denctl** (raccoon's den) - A Python CLI automation tool for macOS built with Typer.
+**denctl** (🦝) - A Python CLI automation tool for macOS built with Typer.
 
 ## Overview
 
