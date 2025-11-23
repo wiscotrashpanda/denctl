@@ -1,3 +1,21 @@
+"""
+Homebrew Backup and Management Module.
+
+This module implements the `den homebrew` command group, which currently handles
+the automated backup of the local Homebrew configuration to a GitHub Gist.
+
+Key Features:
+- **Brewfile Generation**: Dumps the current Homebrew state (taps, brews, casks).
+- **Change Detection**: Uses SHA-256 hashing to prevent unnecessary uploads if the configuration hasn't changed.
+- **AI Formatting**: Uses the Anthropic API (Claude) to organize and comment the Brewfile for better readability.
+- **Gist Integration**: Automatically creates or updates a private GitHub Gist with the backup.
+- **State Management**: Persists the Gist ID and content hash to track state across runs.
+
+Configuration:
+- Stores state (Gist ID, Hash) in `~/.config/denctl/homebrew.json`.
+- Reads API keys from `~/.config/denctl/config.json` or environment variables.
+"""
+
 import hashlib
 import json
 import os
@@ -11,6 +29,7 @@ from anthropic import Anthropic, APIError
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
+# Initialize the homebrew sub-application
 app = typer.Typer(name="homebrew", help="Manage Homebrew backups and configuration.")
 console = Console()
 
@@ -21,7 +40,15 @@ GENERAL_CONFIG_FILE = CONFIG_DIR / "config.json"
 
 
 def get_config() -> Dict[str, Any]:
-    """Load configuration from JSON file."""
+    """
+    Load the Homebrew-specific configuration from the JSON file.
+
+    This file stores state information like the last backup hash,
+    the Gist ID, and the last run timestamp.
+
+    Returns:
+        Dict[str, Any]: The configuration dictionary. Returns empty dict on error.
+    """
     if not CONFIG_FILE.exists():
         return {}
     try:
@@ -31,7 +58,15 @@ def get_config() -> Dict[str, Any]:
 
 
 def get_general_config() -> Dict[str, Any]:
-    """Load general configuration from JSON file."""
+    """
+    Load the general application configuration.
+
+    This file is used to retrieve shared secrets, specifically the
+    Anthropic API key.
+
+    Returns:
+        Dict[str, Any]: The configuration dictionary. Returns empty dict on error.
+    """
     if not GENERAL_CONFIG_FILE.exists():
         return {}
     try:
@@ -41,7 +76,14 @@ def get_general_config() -> Dict[str, Any]:
 
 
 def save_config(config: Dict[str, Any]) -> None:
-    """Save configuration to JSON file."""
+    """
+    Save the Homebrew-specific configuration to the JSON file.
+
+    Ensures directory exists and sets 600 permissions for security.
+
+    Args:
+        config (Dict[str, Any]): The configuration data to save.
+    """
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     CONFIG_FILE.write_text(json.dumps(config, indent=2))
     # Ensure privacy
@@ -49,7 +91,17 @@ def save_config(config: Dict[str, Any]) -> None:
 
 
 def check_dependencies():
-    """Verify required tools are installed."""
+    """
+    Verify that required external tools are installed and configured.
+
+    Checks for:
+    1. `brew`: The Homebrew package manager itself.
+    2. `gh`: The GitHub CLI tool.
+    3. GitHub Authentication: Verifies `gh` is logged in.
+
+    Raises:
+        typer.Exit: If any dependency is missing or not authenticated.
+    """
     for cmd in ["brew", "gh"]:
         if subprocess.run(["which", cmd], capture_output=True).returncode != 0:
             console.print(
@@ -60,14 +112,24 @@ def check_dependencies():
     # Check if gh is authenticated
     if subprocess.run(["gh", "auth", "status"], capture_output=True).returncode != 0:
         console.print(
-            "[bold red]Error:[/bold red] GitHub CLI is not authenticated. "
-            "Run 'gh auth login'."
+            "[bold red]Error:[/bold red] GitHub CLI is not authenticated. Run 'gh auth login'."
         )
         raise typer.Exit(code=1)
 
 
 def generate_brewfile() -> str:
-    """Generate Brewfile content using brew bundle dump."""
+    """
+    Generate the Brewfile content using `brew bundle dump`.
+
+    This runs the external brew command and captures its stdout.
+    The `--file=-` flag tells brew to dump to stdout instead of a file.
+
+    Returns:
+        str: The raw content of the Brewfile.
+
+    Raises:
+        typer.Exit: If the brew command fails.
+    """
     try:
         result = subprocess.run(
             ["brew", "bundle", "dump", "--file=-"],
@@ -84,12 +146,31 @@ def generate_brewfile() -> str:
 
 
 def calculate_hash(content: str) -> str:
-    """Calculate SHA256 hash of content."""
+    """
+    Calculate a SHA-256 hash of the provided content.
+
+    This is used for change detection to avoid unnecessary API calls and commits.
+
+    Args:
+        content (str): The string content to hash.
+
+    Returns:
+        str: The hexadecimal representation of the hash.
+    """
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
 def get_anthropic_api_key() -> Optional[str]:
-    """Retrieve Anthropic API key from Env or General Config."""
+    """
+    Retrieve Anthropic API key from Environment or General Configuration.
+
+    Priority:
+    1. Environment Variable (`ANTHROPIC_API_KEY`)
+    2. Config File (`~/.config/denctl/config.json`)
+
+    Returns:
+        Optional[str]: The API key if found, else None.
+    """
     # 1. Environment Variable
     env_key = os.environ.get("ANTHROPIC_API_KEY")
     if env_key:
@@ -105,7 +186,22 @@ def get_anthropic_api_key() -> Optional[str]:
 
 
 def format_with_claude(content: str, api_key: str) -> str:
-    """Format Brewfile content using Anthropic API."""
+    """
+    Use the Anthropic API (Claude) to format and document the Brewfile.
+
+    This sends the raw Brewfile to Claude with instructions to:
+    - Add headers.
+    - Categorize packages (Dev tools, Utilities, etc.).
+    - Add comments explaining what packages do.
+    - STRICTLY preserve package names and syntax.
+
+    Args:
+        content (str): The raw Brewfile content.
+        api_key (str): The Anthropic API key.
+
+    Returns:
+        str: The formatted Brewfile content, or the original content if the API call fails.
+    """
     client = Anthropic(api_key=api_key)
 
     system_prompt = (
@@ -155,7 +251,25 @@ def format_with_claude(content: str, api_key: str) -> str:
 
 
 def manage_gist(content: str, config: Dict[str, Any]) -> str:
-    """Create or update GitHub Gist."""
+    """
+    Create or update a GitHub Gist with the backup content.
+
+    Logic:
+    1. Checks if a Gist ID is stored in the config.
+    2. If yes, verify it exists via API.
+    3. If it exists, UPDATE it (PATCH).
+    4. If it doesn't exist (or config is empty), CREATE a new one (POST).
+
+    Args:
+        content (str): The file content to upload.
+        config (Dict[str, Any]): The current configuration state.
+
+    Returns:
+        str: The ID of the created or updated Gist.
+
+    Raises:
+        typer.Exit: If the GitHub CLI command fails.
+    """
     gist_id = config.get("gist_id")
     description = "Homebrew Backup"
     filename = "Brewfile"
@@ -229,6 +343,15 @@ def backup(
 ):
     """
     Backup Homebrew configuration to GitHub Gist with optional AI formatting.
+
+    Workflow:
+    1. Verify dependencies (brew, gh).
+    2. Generate Brewfile (`brew bundle dump`).
+    3. Calculate Hash and compare with previous run (Change Detection).
+    4. If changed (or forced):
+       a. Format content using Claude (optional).
+       b. Upload to GitHub Gist.
+       c. Update state configuration.
     """
     check_dependencies()
     config = get_config()
