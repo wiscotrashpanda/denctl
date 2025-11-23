@@ -11,16 +11,18 @@ The tool can be invoked using either `denctl` or `den` for convenience.
 ## Features
 
 - Fast and modern Python CLI using Typer
+- Beautiful terminal output with Rich
 - Managed with uv for blazing-fast dependency resolution
 - Comprehensive test coverage with pytest
-- Code formatting with Black
+- Code linting and formatting with Ruff
+- Static type checking with MyPy
 - Dual command aliases: `denctl` and `den`
 
 ## Installation
 
 ### Prerequisites
 
-- Python >= 3.14
+- Python >= 3.12
 - [uv](https://github.com/astral-sh/uv) package manager
 
 ### Install with uv
@@ -104,16 +106,19 @@ uv run pytest tests/ -v
 uv run pytest tests/ --cov
 ```
 
-### Code Formatting
+### Code Quality
 
-This project uses Black for code formatting:
+This project uses Ruff for linting and formatting, and MyPy for type checking:
 
 ```bash
-# Check formatting
-uv run black --check src/denctl/
-
 # Format code
-uv run black src/denctl/
+uv run ruff format .
+
+# Lint code
+uv run ruff check .
+
+# Type check
+uv run mypy .
 ```
 
 ## Project Structure
@@ -122,7 +127,10 @@ uv run black src/denctl/
 denctl/
 ├── src/
 │   └── denctl/
-│       └── __init__.py          # Main CLI application
+│       ├── __init__.py          # Package initialization
+│       ├── main.py              # Main CLI entry point
+│       └── commands/
+│           └── hello.py         # Hello command logic
 ├── tests/
 │   ├── __init__.py
 │   └── test_hello.py            # Test suite
@@ -130,6 +138,7 @@ denctl/
 │   └── settings.json            # VS Code configuration
 ├── pyproject.toml               # Project configuration
 ├── uv.lock                      # Dependency lock file
+├── AGENTS.md                    # AI Agent guidelines
 └── README.md                    # This file
 ```
 
@@ -141,7 +150,7 @@ This is a personal automation tool, but suggestions and improvements are welcome
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes and add tests
 4. Ensure tests pass (`uv run pytest tests/`)
-5. Format code (`uv run black src/denctl/`)
+5. Format and lint code (`uv run ruff format .` and `uv run ruff check .`)
 6. Commit your changes (`git commit -m 'Add amazing feature'`)
 7. Push to the branch (`git push origin feature/amazing-feature`)
 8. Open a Pull Request
