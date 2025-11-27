@@ -9,7 +9,7 @@ import pytest
 from anthropic import APIError
 from typer.testing import CliRunner
 
-from denctl.commands.homebrew import (
+from den.commands.homebrew import (
     app,
     calculate_hash,
     check_dependencies,
@@ -28,15 +28,15 @@ runner = CliRunner()
 @pytest.fixture
 def temp_config_dir(tmp_path, monkeypatch):
     """Create a temporary config directory for testing."""
-    temp_config = tmp_path / ".config" / "denctl"
+    temp_config = tmp_path / ".config" / "den"
     temp_config_file = temp_config / "homebrew.json"
     temp_general_config_file = temp_config / "config.json"
 
     # Patch the module-level constants
-    monkeypatch.setattr("denctl.commands.homebrew.CONFIG_DIR", temp_config)
-    monkeypatch.setattr("denctl.commands.homebrew.CONFIG_FILE", temp_config_file)
+    monkeypatch.setattr("den.commands.homebrew.CONFIG_DIR", temp_config)
+    monkeypatch.setattr("den.commands.homebrew.CONFIG_FILE", temp_config_file)
     monkeypatch.setattr(
-        "denctl.commands.homebrew.GENERAL_CONFIG_FILE", temp_general_config_file
+        "den.commands.homebrew.GENERAL_CONFIG_FILE", temp_general_config_file
     )
 
     return temp_config, temp_config_file, temp_general_config_file
@@ -179,7 +179,7 @@ def test_get_anthropic_api_key_none(temp_config_dir, monkeypatch):
     assert key is None
 
 
-@patch("denctl.commands.homebrew.subprocess.run")
+@patch("den.commands.homebrew.subprocess.run")
 def test_check_dependencies_success(mock_run):
     """Test dependency check when all dependencies are present."""
     # Mock successful which commands
@@ -193,7 +193,7 @@ def test_check_dependencies_success(mock_run):
     check_dependencies()
 
 
-@patch("denctl.commands.homebrew.subprocess.run")
+@patch("den.commands.homebrew.subprocess.run")
 def test_check_dependencies_missing_brew(mock_run):
     """Test dependency check when brew is missing."""
     mock_run.return_value = Mock(returncode=1)
@@ -202,7 +202,7 @@ def test_check_dependencies_missing_brew(mock_run):
         check_dependencies()
 
 
-@patch("denctl.commands.homebrew.subprocess.run")
+@patch("den.commands.homebrew.subprocess.run")
 def test_check_dependencies_gh_not_authenticated(mock_run):
     """Test dependency check when gh is not authenticated."""
     mock_run.side_effect = [
@@ -215,7 +215,7 @@ def test_check_dependencies_gh_not_authenticated(mock_run):
         check_dependencies()
 
 
-@patch("denctl.commands.homebrew.subprocess.run")
+@patch("den.commands.homebrew.subprocess.run")
 def test_generate_brewfile_success(mock_run):
     """Test successful Brewfile generation."""
     expected_output = 'tap "homebrew/core"\nbrew "git"\ncask "visual-studio-code"'
@@ -226,7 +226,7 @@ def test_generate_brewfile_success(mock_run):
     mock_run.assert_called_once()
 
 
-@patch("denctl.commands.homebrew.subprocess.run")
+@patch("den.commands.homebrew.subprocess.run")
 def test_generate_brewfile_failure(mock_run):
     """Test Brewfile generation failure."""
     mock_run.side_effect = subprocess.CalledProcessError(
@@ -237,7 +237,7 @@ def test_generate_brewfile_failure(mock_run):
         generate_brewfile()
 
 
-@patch("denctl.commands.homebrew.Anthropic")
+@patch("den.commands.homebrew.Anthropic")
 def test_format_with_claude_success(mock_anthropic_class):
     """Test successful Claude formatting."""
     mock_client = MagicMock()
@@ -260,7 +260,7 @@ def test_format_with_claude_success(mock_anthropic_class):
     mock_client.messages.create.assert_called_once()
 
 
-@patch("denctl.commands.homebrew.Anthropic")
+@patch("den.commands.homebrew.Anthropic")
 def test_format_with_claude_api_error(mock_anthropic_class):
     """Test Claude formatting when API error occurs."""
     mock_client = MagicMock()
@@ -274,7 +274,7 @@ def test_format_with_claude_api_error(mock_anthropic_class):
     assert result == original_content
 
 
-@patch("denctl.commands.homebrew.Anthropic")
+@patch("den.commands.homebrew.Anthropic")
 def test_format_with_claude_exception(mock_anthropic_class):
     """Test Claude formatting when generic exception occurs."""
     mock_client = MagicMock()
@@ -288,7 +288,7 @@ def test_format_with_claude_exception(mock_anthropic_class):
     assert result == original_content
 
 
-@patch("denctl.commands.homebrew.subprocess.run")
+@patch("den.commands.homebrew.subprocess.run")
 def test_manage_gist_create_new(mock_run):
     """Test creating a new gist."""
     gist_id = "new_gist_123"
@@ -302,7 +302,7 @@ def test_manage_gist_create_new(mock_run):
     assert result == gist_id
 
 
-@patch("denctl.commands.homebrew.subprocess.run")
+@patch("den.commands.homebrew.subprocess.run")
 def test_manage_gist_update_existing(mock_run):
     """Test updating an existing gist."""
     gist_id = "existing_gist_456"
@@ -318,7 +318,7 @@ def test_manage_gist_update_existing(mock_run):
     assert result == gist_id
 
 
-@patch("denctl.commands.homebrew.subprocess.run")
+@patch("den.commands.homebrew.subprocess.run")
 def test_manage_gist_recreate_when_missing(mock_run):
     """Test recreating gist when previous one is missing."""
     old_gist_id = "missing_gist"
@@ -335,10 +335,10 @@ def test_manage_gist_recreate_when_missing(mock_run):
     assert result == new_gist_id
 
 
-@patch("denctl.commands.homebrew.check_dependencies")
-@patch("denctl.commands.homebrew.generate_brewfile")
-@patch("denctl.commands.homebrew.get_anthropic_api_key")
-@patch("denctl.commands.homebrew.manage_gist")
+@patch("den.commands.homebrew.check_dependencies")
+@patch("den.commands.homebrew.generate_brewfile")
+@patch("den.commands.homebrew.get_anthropic_api_key")
+@patch("den.commands.homebrew.manage_gist")
 def test_backup_no_changes(
     mock_manage_gist, mock_get_api_key, mock_generate, mock_check_deps, temp_config_dir
 ):
@@ -361,10 +361,10 @@ def test_backup_no_changes(
     mock_manage_gist.assert_not_called()
 
 
-@patch("denctl.commands.homebrew.check_dependencies")
-@patch("denctl.commands.homebrew.generate_brewfile")
-@patch("denctl.commands.homebrew.get_anthropic_api_key")
-@patch("denctl.commands.homebrew.manage_gist")
+@patch("den.commands.homebrew.check_dependencies")
+@patch("den.commands.homebrew.generate_brewfile")
+@patch("den.commands.homebrew.get_anthropic_api_key")
+@patch("den.commands.homebrew.manage_gist")
 def test_backup_force_flag(
     mock_manage_gist, mock_get_api_key, mock_generate, mock_check_deps, temp_config_dir
 ):
@@ -390,9 +390,9 @@ def test_backup_force_flag(
     mock_manage_gist.assert_called_once()
 
 
-@patch("denctl.commands.homebrew.check_dependencies")
-@patch("denctl.commands.homebrew.generate_brewfile")
-@patch("denctl.commands.homebrew.get_anthropic_api_key")
+@patch("den.commands.homebrew.check_dependencies")
+@patch("den.commands.homebrew.generate_brewfile")
+@patch("den.commands.homebrew.get_anthropic_api_key")
 def test_backup_dry_run(
     mock_get_api_key, mock_generate, mock_check_deps, temp_config_dir
 ):
@@ -407,11 +407,11 @@ def test_backup_dry_run(
     assert "not uploaded" in result.output
 
 
-@patch("denctl.commands.homebrew.check_dependencies")
-@patch("denctl.commands.homebrew.generate_brewfile")
-@patch("denctl.commands.homebrew.get_anthropic_api_key")
-@patch("denctl.commands.homebrew.format_with_claude")
-@patch("denctl.commands.homebrew.manage_gist")
+@patch("den.commands.homebrew.check_dependencies")
+@patch("den.commands.homebrew.generate_brewfile")
+@patch("den.commands.homebrew.get_anthropic_api_key")
+@patch("den.commands.homebrew.format_with_claude")
+@patch("den.commands.homebrew.manage_gist")
 def test_backup_with_formatting(
     mock_manage_gist,
     mock_format,
@@ -438,10 +438,10 @@ def test_backup_with_formatting(
     mock_manage_gist.assert_called_once_with(formatted_content, {})
 
 
-@patch("denctl.commands.homebrew.check_dependencies")
-@patch("denctl.commands.homebrew.generate_brewfile")
-@patch("denctl.commands.homebrew.get_anthropic_api_key")
-@patch("denctl.commands.homebrew.manage_gist")
+@patch("den.commands.homebrew.check_dependencies")
+@patch("den.commands.homebrew.generate_brewfile")
+@patch("den.commands.homebrew.get_anthropic_api_key")
+@patch("den.commands.homebrew.manage_gist")
 def test_backup_no_format_flag(
     mock_manage_gist, mock_get_api_key, mock_generate, mock_check_deps, temp_config_dir
 ):

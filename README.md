@@ -1,12 +1,10 @@
-# denctl
+# den
 
-**denctl** 🦝 - A Python CLI automation tool for macOS built with Typer.
+**den** 🦝 - A Python CLI automation tool for macOS built with Typer.
 
 ## Overview
 
-**denctl** is a command-line interface application designed to house various automation tasks for local macOS development. Built with modern Python tooling including [uv](https://github.com/astral-sh/uv) for package management and [Typer](https://typer.tiangolo.com/) for CLI functionality.
-
-The tool can be invoked using either `denctl` or `den` for convenience.
+**den** is a command-line interface application designed to house various automation tasks for local macOS development. Built with modern Python tooling including [uv](https://github.com/astral-sh/uv) for package management and [Typer](https://typer.tiangolo.com/) for CLI functionality.
 
 ## Features
 
@@ -16,7 +14,7 @@ The tool can be invoked using either `denctl` or `den` for convenience.
 - Comprehensive test coverage with pytest
 - Code linting and formatting with Ruff
 - Static type checking with MyPy
-- Dual command aliases: `denctl` and `den`
+
 
 ## Installation
 
@@ -29,8 +27,8 @@ The tool can be invoked using either `denctl` or `den` for convenience.
 
 ```bash
 # Clone the repository
-git clone git@github.com:wiscotrashpanda/denctl.git
-cd denctl
+git clone git@github.com:wiscotrashpanda/den.git
+cd den
 
 # Install dependencies
 uv sync
@@ -47,14 +45,13 @@ uv pip install -e .
 
 # Now you can use directly (within activated venv)
 .venv/bin/den hello
-.venv/bin/denctl hello
 ```
 
 ## Usage
 
 ### Homebrew Backups
 
-**denctl** provides automated backups for your Homebrew configuration to a private GitHub Gist, optionally formatted by Claude AI.
+**den** provides automated backups for your Homebrew configuration to a private GitHub Gist, optionally formatted by Claude AI.
 
 #### Prerequisites
 
@@ -92,7 +89,7 @@ uv run den homebrew schedule install
 uv run den homebrew schedule uninstall
 ```
 
-Logs are stored in `~/Library/Logs/denctl.homebrew.log` and `~/Library/Logs/denctl.homebrew.error.log`.
+Logs are stored in `~/Library/Logs/den.homebrew.log` and `~/Library/Logs/den.homebrew.error.log`.
 
 ### Hello Command
 
@@ -107,9 +104,7 @@ uv run den hello
 uv run den hello Josh
 # Output: Hello Josh!
 
-# Using denctl alias
-uv run denctl hello wiscotrashpanda
-# Output: Hello wiscotrashpanda!
+
 ```
 
 ### Help
@@ -128,8 +123,8 @@ uv run den hello --help
 
 ```bash
 # Clone and navigate to the repository
-git clone git@github.com:wiscotrashpanda/denctl.git
-cd denctl
+git clone git@github.com:wiscotrashpanda/den.git
+cd den
 
 # Install dependencies including dev dependencies
 uv sync
@@ -166,7 +161,7 @@ uv run mypy .
 ## Project Structure
 
 ```
-denctl/
+den/
 ├── src/
 │   └── denctl/
 │       ├── __init__.py          # Package initialization

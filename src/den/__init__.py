@@ -1,7 +1,7 @@
 """
-denctl - 🦝 automation CLI.
+den - 🦝 automation CLI.
 
-This package provides the core functionality for the denctl command-line interface,
+This package provides the core functionality for the den command-line interface,
 a tool designed to automate various local development tasks on macOS.
 
 The package structure is as follows:

@@ -7,7 +7,7 @@ from unittest.mock import patch
 import pytest
 from typer.testing import CliRunner
 
-from denctl.commands.auth import (
+from den.commands.auth import (
     CONFIG_DIR,
     CONFIG_FILE,
     app,
@@ -21,12 +21,12 @@ runner = CliRunner()
 @pytest.fixture
 def temp_config_dir(tmp_path, monkeypatch):
     """Create a temporary config directory for testing."""
-    temp_config = tmp_path / ".config" / "denctl"
+    temp_config = tmp_path / ".config" / "den"
     temp_config_file = temp_config / "config.json"
 
     # Patch the module-level constants
-    monkeypatch.setattr("denctl.commands.auth.CONFIG_DIR", temp_config)
-    monkeypatch.setattr("denctl.commands.auth.CONFIG_FILE", temp_config_file)
+    monkeypatch.setattr("den.commands.auth.CONFIG_DIR", temp_config)
+    monkeypatch.setattr("den.commands.auth.CONFIG_FILE", temp_config_file)
 
     return temp_config, temp_config_file
 

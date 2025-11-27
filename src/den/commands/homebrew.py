@@ -12,8 +12,8 @@ Key Features:
 - **State Management**: Persists the Gist ID and content hash to track state across runs.
 
 Configuration:
-- Stores state (Gist ID, Hash) in `~/.config/denctl/homebrew.json`.
-- Reads API keys from `~/.config/denctl/config.json` or environment variables.
+- Stores state (Gist ID, Hash) in `~/.config/den/homebrew.json`.
+- Reads API keys from `~/.config/den/config.json` or environment variables.
 """
 
 import hashlib
@@ -39,12 +39,12 @@ app.add_typer(schedule_app, name="schedule")
 console = Console()
 
 # Configuration Constants
-CONFIG_DIR = Path.home() / ".config" / "denctl"
+CONFIG_DIR = Path.home() / ".config" / "den"
 CONFIG_FILE = CONFIG_DIR / "homebrew.json"
 GENERAL_CONFIG_FILE = CONFIG_DIR / "config.json"
 
 # Scheduling Constants
-PLIST_LABEL = "com.emkaytec.denctl.homebrew.plist"
+PLIST_LABEL = "com.emkaytec.den.homebrew.plist"
 PLIST_PATH = Path.home() / "Library" / "LaunchAgents" / PLIST_LABEL
 
 
@@ -175,7 +175,7 @@ def get_anthropic_api_key() -> Optional[str]:
 
     Priority:
     1. Environment Variable (`ANTHROPIC_API_KEY`)
-    2. Config File (`~/.config/denctl/config.json`)
+    2. Config File (`~/.config/den/config.json`)
 
     Returns:
         Optional[str]: The API key if found, else None.
@@ -450,9 +450,9 @@ def schedule_install():
     )
 
     # Determine the executable path
-    # We use sys.executable to find the python interpreter, but we want the 'denctl' script
+    # We use sys.executable to find the python interpreter, but we want the 'den' script
     # equivalent if possible, or run module.
-    # However, 'denctl' is likely an entry point script.
+    # However, 'den' is likely an entry point script.
     # Safest way in a 'uv' or 'venv' environment is to use the absolute path to the executable script.
     executable = sys.argv[0]
     if not os.path.isabs(executable):
@@ -461,8 +461,8 @@ def schedule_install():
     # If run via 'uv run', sys.argv[0] might be different.
     # But typically sys.argv[0] is the script path.
     # Let's verify if it's python or the script.
-    # If it ends in 'denctl', we are good. If it is 'python', we need the module args.
-    # A robust way for a CLI installed via pip/uv is to assume 'denctl' is on the path or use the full path.
+    # If it ends in 'den', we are good. If it is 'python', we need the module args.
+    # A robust way for a CLI installed via pip/uv is to assume 'den' is on the path or use the full path.
 
     # Let's construct the command arguments
     program_args = [executable, "homebrew", "backup"]
@@ -474,10 +474,8 @@ def schedule_install():
             "Hour": local_target.hour,
             "Minute": local_target.minute,
         },
-        "StandardOutPath": str(Path.home() / "Library/Logs/denctl.homebrew.log"),
-        "StandardErrorPath": str(
-            Path.home() / "Library/Logs/denctl.homebrew.error.log"
-        ),
+        "StandardOutPath": str(Path.home() / "Library/Logs/den.homebrew.log"),
+        "StandardErrorPath": str(Path.home() / "Library/Logs/den.homebrew.error.log"),
         "RunAtLoad": False,
     }
 

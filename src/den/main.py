@@ -1,5 +1,5 @@
 """
-Main Entry Point for denctl.
+Main Entry Point for den.
 
 This module initializes the Typer application, registers all available subcommands,
 and handles global options like `--version`.
@@ -11,7 +11,7 @@ The application structure is modular:
 
 Usage:
     This file is executed when running the CLI.
-    Example: `uv run denctl --help`
+    Example: `uv run den --help`
 """
 
 from typing import Optional
@@ -19,17 +19,17 @@ from typing import Optional
 import typer
 from rich import print
 
-from denctl import __version__
-from denctl.commands import auth, homebrew
-from denctl.commands.hello import hello
+from den import __version__
+from den.commands import auth, homebrew
+from den.commands.hello import hello
 
 # Initialize the main Typer application
 # - name: The name of the CLI (displayed in help).
 # - help: The description displayed in the main help output.
 # - no_args_is_help: If true, running without arguments shows help instead of error.
 app = typer.Typer(
-    name="denctl",
-    help="denctl - 🦝 automation CLI",
+    name="den",
+    help="den - 🦝 automation CLI",
     no_args_is_help=True,
 )
 
@@ -38,11 +38,11 @@ app = typer.Typer(
 app.command(name="hello")(hello)
 
 # Register the 'homebrew' command group
-# This adds all commands defined in denctl.commands.homebrew under the 'homebrew' subcommand.
+# This adds all commands defined in the homebrew module under the 'homebrew' subcommand.
 app.add_typer(homebrew.app, name="homebrew")
 
 # Register the 'auth' command group
-# This adds all commands defined in denctl.commands.auth under the 'auth' subcommand.
+# This adds all commands defined in the auth module under the 'auth' subcommand.
 app.add_typer(auth.app, name="auth")
 
 
@@ -57,7 +57,7 @@ def version_callback(value: bool):
         value (bool): The value of the flag (True if present).
     """
     if value:
-        print(f"denctl version: [bold blue]{__version__}[/bold blue]")
+        print(f"den version: [bold blue]{__version__}[/bold blue]")
         raise typer.Exit()
 
 

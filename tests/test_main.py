@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 from typer.testing import CliRunner
 
-from denctl.main import app, main, version_callback
+from den.main import app, main, version_callback
 
 runner = CliRunner()
 
@@ -14,7 +14,7 @@ def test_app_no_args_shows_help():
     """Test that running with no args shows help due to no_args_is_help=True."""
     result = runner.invoke(app, [])
     assert result.exit_code == 0
-    assert "denctl - 🦝 automation CLI" in result.output
+    assert "den - 🦝 automation CLI" in result.output
     assert "hello" in result.output
     assert "homebrew" in result.output
     assert "auth" in result.output
@@ -24,7 +24,7 @@ def test_app_help_flag():
     """Test main app help flag."""
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
-    assert "denctl - 🦝 automation CLI" in result.output
+    assert "den - 🦝 automation CLI" in result.output
     assert "Usage:" in result.output
 
 
@@ -32,14 +32,14 @@ def test_app_version_flag():
     """Test version flag displays version."""
     result = runner.invoke(app, ["--version"])
     assert result.exit_code == 0
-    assert "denctl version:" in result.output
+    assert "den version:" in result.output
 
 
 def test_app_version_short_flag():
     """Test short version flag -v."""
     result = runner.invoke(app, ["-v"])
     assert result.exit_code == 0
-    assert "denctl version:" in result.output
+    assert "den version:" in result.output
 
 
 def test_version_callback_exits():
@@ -91,7 +91,7 @@ def test_invalid_command():
     assert "No such command" in result.output or "Error" in result.output
 
 
-@patch("denctl.main.app")
+@patch("den.main.app")
 def test_main_function_calls_app(mock_app):
     """Test that main() function calls the app."""
     main()
@@ -148,4 +148,4 @@ def test_app_name():
     # The app name should appear in help output
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
-    assert "denctl" in result.output.lower()
+    assert "den" in result.output.lower()

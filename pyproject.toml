@@ -1,5 +1,5 @@
 [project]
-name = "denctl"
+name = "den"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -14,8 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-denctl = "denctl.main:main"
-den = "denctl.main:main"
+den = "den.main:main"
 
 [build-system]
 requires = ["uv_build>=0.9.11,<0.10.0"]

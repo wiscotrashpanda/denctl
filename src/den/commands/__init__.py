@@ -1,5 +1,5 @@
 """
-Command Modules for denctl.
+Command Modules for den.
 
 This package contains the implementations for various CLI commands.
 Each module typically defines a Typer app (sub-app) or a standalone command function.
@@ -10,6 +10,6 @@ Available Modules:
 - auth: Commands for managing authentication credentials.
 """
 
-from denctl.commands import auth, hello, homebrew
+from den.commands import auth, hello, homebrew
 
 __all__ = ["auth", "hello", "homebrew"]
