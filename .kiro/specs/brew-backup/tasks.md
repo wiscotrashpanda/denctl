@@ -6,7 +6,7 @@
   - Git commit and push changes
   - _Requirements: 3.1, 4.1_
 
-- [-] 2. Implement hash utility module
+- [x] 2. Implement hash utility module
   - [x] 2.1 Create `src/den/hash_utils.py` with `compute_hash()` function
     - Implement SHA-256 hash computation for string content
     - Return hash as hex string with "sha256:" prefix
@@ -14,25 +14,25 @@
   - [x] 2.2 Write property test for hash consistency
     - **Property 1: Hash computation consistency**
     - **Validates: Requirements 2.3**
-  - [-] 2.3 Git commit and push hash utility module
+  - [x] 2.3 Git commit and push hash utility module
     - Commit implementation and tests
     - Push to remote repository
 
-- [ ] 3. Implement state storage module
-  - [ ] 3.1 Create `src/den/state_storage.py` with state management functions
+- [-] 3. Implement state storage module
+  - [x] 3.1 Create `src/den/state_storage.py` with state management functions
     - Implement `get_state_file_path()` returning `~/.config/den/state.json`
     - Implement `load_state()` to read existing state
     - Implement `save_state()` to write state, merging with existing content
     - Implement `get_brew_state()` to retrieve brew-specific state
     - Implement `save_brew_state()` to save hash and gist_id under "brew" key
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
-  - [ ] 3.2 Write property test for state merge preservation
+  - [x] 3.2 Write property test for state merge preservation
     - **Property 2: State merge preserves existing keys**
     - **Validates: Requirements 5.3**
-  - [ ] 3.3 Write property test for state serialization round-trip
+  - [x] 3.3 Write property test for state serialization round-trip
     - **Property 3: State serialization round-trip**
     - **Validates: Requirements 5.6**
-  - [ ] 3.4 Git commit and push state storage module
+  - [-] 3.4 Git commit and push state storage module
     - Commit implementation and tests
     - Push to remote repository
 
