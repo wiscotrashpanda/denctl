@@ -19,7 +19,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 brew install uv
 ```
 
-### Install den
+### Install den (Development Mode)
 
 ```bash
 # Clone the repository
@@ -29,6 +29,47 @@ cd den
 # Install the package
 uv pip install -e .
 ```
+
+### Install as Standalone Executable (Recommended)
+
+For a standalone installation that doesn't require Python to be installed on the target system, use the installation script.
+
+**Requirements**: Python 3.12 or higher, pip (Python package installer)
+
+#### Build and Install
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd den
+
+# Run the installation script
+./install.sh
+```
+
+The installation script will:
+
+1. Check for required dependencies (Python 3, pip)
+2. Install PyInstaller if not already present
+3. Build the standalone executable using PyInstaller
+4. Create the `~/Local` directory if it doesn't exist
+5. Copy the executable to `~/Local/den`
+6. Create a symbolic link from `/usr/local/bin/den` to `~/Local/den` (requires sudo)
+7. Verify the installation
+
+#### Installation Locations
+
+- **Binary location**: `~/Local/den` - The actual executable binary
+- **Symlink location**: `/usr/local/bin/den` - Symbolic link for PATH access
+
+#### Exit Codes
+
+The installation script uses the following exit codes:
+
+- `0` - Success
+- `1` - Missing dependencies (Python or pip)
+- `2` - Build failed
+- `3` - Installation failed
 
 ## Usage
 
@@ -80,7 +121,7 @@ uv run pytest
 
 ### Project Structure
 
-```
+```text
 den/
 ├── src/
 │   └── den/
