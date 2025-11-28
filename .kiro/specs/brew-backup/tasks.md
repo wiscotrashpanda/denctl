@@ -18,7 +18,7 @@
     - Commit implementation and tests
     - Push to remote repository
 
-- [-] 3. Implement state storage module
+- [x] 3. Implement state storage module
   - [x] 3.1 Create `src/den/state_storage.py` with state management functions
     - Implement `get_state_file_path()` returning `~/.config/den/state.json`
     - Implement `load_state()` to read existing state
@@ -32,20 +32,20 @@
   - [x] 3.3 Write property test for state serialization round-trip
     - **Property 3: State serialization round-trip**
     - **Validates: Requirements 5.6**
-  - [-] 3.4 Git commit and push state storage module
+  - [x] 3.4 Git commit and push state storage module
     - Commit implementation and tests
     - Push to remote repository
 
-- [ ] 4. Implement brew logger module
-  - [ ] 4.1 Create `src/den/brew_logger.py` with logging configuration
+- [-] 4. Implement brew logger module
+  - [x] 4.1 Create `src/den/brew_logger.py` with logging configuration
     - Implement `get_log_file_path()` returning `~/.config/den/logs/brew-upgrade.log`
     - Implement `setup_brew_logger()` to configure file handler with timestamp and level format
     - Create log directory if it doesn't exist
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
-  - [ ] 4.2 Write property test for log entry format
+  - [x] 4.2 Write property test for log entry format
     - **Property 4: Log entry format compliance**
     - **Validates: Requirements 6.3, 6.4**
-  - [ ] 4.3 Git commit and push brew logger module
+  - [-] 4.3 Git commit and push brew logger module
     - Commit implementation and tests
     - Push to remote repository
 
