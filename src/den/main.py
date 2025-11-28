@@ -9,6 +9,7 @@ from den import __version__
 from den.commands.auth import auth_app
 from den.commands.brew import brew_app
 from den.commands.hello import hello
+from den.commands.launchctl import launchctl_app
 
 app = typer.Typer(
     name="den",
@@ -20,6 +21,7 @@ app = typer.Typer(
 app.command()(hello)
 app.add_typer(auth_app, name="auth")
 app.add_typer(brew_app, name="brew")
+app.add_typer(launchctl_app, name="launchctl")
 
 
 def version_callback(value: bool) -> None:
