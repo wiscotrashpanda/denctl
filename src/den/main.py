@@ -6,12 +6,16 @@ This module initializes the Typer application and registers all commands.
 import typer
 
 from den import __version__
+from den.commands.hello import hello
 
 app = typer.Typer(
     name="den",
     help="A CLI utility for local machine automations.",
     add_completion=False,
 )
+
+# Register commands
+app.command()(hello)
 
 
 def version_callback(value: bool) -> None:
