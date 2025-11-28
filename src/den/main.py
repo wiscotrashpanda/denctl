@@ -7,6 +7,7 @@ import typer
 
 from den import __version__
 from den.commands.auth import auth_app
+from den.commands.brew import brew_app
 from den.commands.hello import hello
 
 app = typer.Typer(
@@ -18,6 +19,7 @@ app = typer.Typer(
 # Register commands
 app.command()(hello)
 app.add_typer(auth_app, name="auth")
+app.add_typer(brew_app, name="brew")
 
 
 def version_callback(value: bool) -> None:
