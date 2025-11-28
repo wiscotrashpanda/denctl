@@ -39,3 +39,24 @@ def test_property_successful_exit_code(name: str):
     """
     result = runner.invoke(app, ["hello", "--name", name])
     assert result.exit_code == 0
+
+
+@settings(max_examples=100)
+@given(name=st.text(min_size=1, alphabet=st.characters(blacklist_categories=("Cs",))))
+def test_property_greeting_round_trip_consistency(name: str):
+    """**Feature: den-cli, Property 3: Greeting string round-trip consistency**
+
+    *For any* greeting message produced by the hello command, serializing
+    the string to bytes (UTF-8) and deserializing back to a string SHALL
+    produce an equivalent value.
+
+    **Validates: Requirements 5.5**
+    """
+    result = runner.invoke(app, ["hello", "--name", name])
+    greeting = result.output.strip()
+
+    # Round-trip: encode to UTF-8 bytes, then decode back to string
+    encoded = greeting.encode("utf-8")
+    decoded = encoded.decode("utf-8")
+
+    assert greeting == decoded
