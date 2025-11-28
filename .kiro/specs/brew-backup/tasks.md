@@ -1,20 +1,20 @@
 # Implementation Plan
 
-- [-] 1. Set up project structure and dependencies
+- [x] 1. Set up project structure and dependencies
   - Add `anthropic` and `httpx` to project dependencies in `pyproject.toml`
   - Create placeholder files for new modules
   - Git commit and push changes
   - _Requirements: 3.1, 4.1_
 
-- [ ] 2. Implement hash utility module
-  - [ ] 2.1 Create `src/den/hash_utils.py` with `compute_hash()` function
+- [-] 2. Implement hash utility module
+  - [x] 2.1 Create `src/den/hash_utils.py` with `compute_hash()` function
     - Implement SHA-256 hash computation for string content
     - Return hash as hex string with "sha256:" prefix
     - _Requirements: 2.3_
-  - [ ] 2.2 Write property test for hash consistency
+  - [x] 2.2 Write property test for hash consistency
     - **Property 1: Hash computation consistency**
     - **Validates: Requirements 2.3**
-  - [ ] 2.3 Git commit and push hash utility module
+  - [-] 2.3 Git commit and push hash utility module
     - Commit implementation and tests
     - Push to remote repository
 
