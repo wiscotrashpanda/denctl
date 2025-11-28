@@ -32,19 +32,24 @@ class TestBuildFormattingPrompt:
 
         assert "header" in prompt.lower()
         assert "den" in prompt
+        assert "brew bundle" in prompt.lower()
+        assert "brew bundle cleanup" in prompt.lower()
 
-    def test_prompt_includes_description_instruction(self) -> None:
-        """Test that the prompt instructs to add descriptions for each package."""
+    def test_prompt_includes_inline_description_instruction(self) -> None:
+        """Test that the prompt instructs to add inline descriptions at end of each line."""
         raw_content = 'brew "git"'
         prompt = build_formatting_prompt(raw_content)
 
         assert "description" in prompt.lower()
+        assert "inline" in prompt.lower()
+        assert "end of each" in prompt.lower()
 
-    def test_prompt_includes_categorization_instruction(self) -> None:
-        """Test that the prompt instructs to organize into categories."""
+    def test_prompt_includes_decorated_section_headers(self) -> None:
+        """Test that the prompt instructs to use decorated section headers."""
         raw_content = 'brew "git"'
         prompt = build_formatting_prompt(raw_content)
 
+        assert "============" in prompt
         assert "categor" in prompt.lower()  # matches categorize, categories, etc.
 
     def test_prompt_includes_preservation_instruction(self) -> None:

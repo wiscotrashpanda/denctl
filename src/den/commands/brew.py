@@ -18,7 +18,11 @@ brew_app = typer.Typer(help="Homebrew management commands.")
 
 
 @brew_app.command()
-def upgrade() -> None:
+def upgrade(
+    force: bool = typer.Option(
+        False, "--force", "-f", help="Force backup even if Brewfile unchanged"
+    ),
+) -> None:
     """Upgrade Homebrew packages and backup Brewfile to GitHub Gist."""
     logger = setup_brew_logger()
     logger.info("Starting brew upgrade process")
@@ -53,10 +57,13 @@ def upgrade() -> None:
     existing_hash = brew_state.get("brewfile_hash") if brew_state else None
     existing_gist_id = brew_state.get("gist_id") if brew_state else None
 
-    if existing_hash == new_hash:
+    if existing_hash == new_hash and not force:
         typer.echo("Brewfile unchanged, skipping backup")
         logger.info("Brewfile unchanged, skipping backup")
         return
+
+    if force and existing_hash == new_hash:
+        logger.info("Force flag set, proceeding despite unchanged Brewfile")
 
     # Step 4: Load credentials
     credentials = load_credentials()

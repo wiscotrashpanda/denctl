@@ -82,7 +82,7 @@ class TestGenerateBrewfile:
 
             assert result == expected_content
             mock_run.assert_called_once_with(
-                ["brew", "bundle", "dump", "--force", "--stdout"],
+                ["brew", "bundle", "dump", "--force", "--file=-"],
                 capture_output=True,
                 text=True,
                 check=False,
