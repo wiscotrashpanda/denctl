@@ -42,19 +42,19 @@
     - Return None for missing credentials (not an error)
     - _Requirements: 3.1, 3.2, 3.3_
 
-- [ ] 5. Checkpoint - Ensure all tests pass
+- [x] 5. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 6. Implement migration from auth.json
-  - [ ] 6.1 Create migration module
+- [x] 6. Implement migration from auth.json
+  - [x] 6.1 Create migration module
     - Create `src/den/auth_migration.py`
     - Implement `migrate_from_json()` function
     - Implement `get_legacy_auth_file_path()` function
     - _Requirements: 4.1, 4.2, 4.3, 4.4_
-  - [ ] 6.2 Write property test for migration transfers and cleans up
+  - [x] 6.2 Write property test for migration transfers and cleans up
     - **Property 4: Migration Transfers and Cleans Up**
     - **Validates: Requirements 4.1, 4.2**
-  - [ ] 6.3 Write property test for migration preserves existing credentials
+  - [x] 6.3 Write property test for migration preserves existing credentials
     - **Property 5: Migration Preserves Existing Keychain Credentials**
     - **Validates: Requirements 4.4**
 
