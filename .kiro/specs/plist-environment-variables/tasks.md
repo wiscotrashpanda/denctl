@@ -1,12 +1,14 @@
 # Implementation Plan
 
 - [x] 1. Update TaskConfig dataclass with environment_variables field
-  - Add `environment_variables: dict[str, str] | None = None` field to TaskConfig
+  - Add `environment_variables: dict[str, str] | None = None` field to
+    TaskConfig
   - Update docstring to document the new field
   - _Requirements: 1.1, 1.2_
 
 - [x] 2. Update generate_plist to include EnvironmentVariables
-  - [x] 2.1 Add EnvironmentVariables dict to plist output when environment_variables is set and non-empty
+  - [x] 2.1 Add EnvironmentVariables dict to plist output when
+    environment_variables is set and non-empty
     - Check if `config.environment_variables` is truthy (not None and not empty)
     - Add `EnvironmentVariables` key to plist_dict with the environment variables
     - _Requirements: 1.1, 1.2, 1.3_
