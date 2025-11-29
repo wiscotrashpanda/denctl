@@ -1,66 +1,76 @@
 """Auth storage module for managing credentials.
 
-This module handles reading and writing credentials to the auth.json file
-at ~/.config/den/auth.json.
+This module handles reading and writing credentials using a backend abstraction.
+By default, credentials are stored in macOS Keychain, but the backend can be
+injected for testing purposes.
 """
 
-import json
-from pathlib import Path
+from den.keychain_backend import KeychainBackend, MacOSKeychainBackend
+
+# Global backend instance - defaults to MacOSKeychainBackend
+_backend: KeychainBackend = MacOSKeychainBackend()
 
 
-def get_auth_file_path() -> Path:
-    """Return the path to the auth.json file.
+def set_backend(backend: KeychainBackend) -> None:
+    """Set the storage backend (for testing).
 
-    Returns:
-        Path to ~/.config/den/auth.json
+    Args:
+        backend: The backend to use for credential storage.
     """
-    return Path.home() / ".config" / "den" / "auth.json"
+    global _backend
+    _backend = backend
 
 
 def load_credentials() -> dict[str, str]:
-    """Load existing credentials from auth.json.
+    """Load all credentials from the backend.
 
     Returns:
-        Dictionary of credentials, or empty dict if file doesn't exist.
+        Dictionary of credentials, or empty dict if no credentials exist.
 
     Raises:
-        json.JSONDecodeError: If the file contains invalid JSON.
+        KeychainAccessError: If the backend cannot be accessed.
     """
-    auth_file = get_auth_file_path()
-    if not auth_file.exists():
-        return {}
-
-    with auth_file.open("r", encoding="utf-8") as f:
-        return json.load(f)
+    credentials = {}
+    for key in _backend.list_credentials():
+        value = _backend.get_credential(key)
+        if value is not None:
+            credentials[key] = value
+    return credentials
 
 
 def save_credentials(credentials: dict[str, str]) -> None:
-    """Save credentials to auth.json, creating directory if needed.
+    """Save multiple credentials to the backend.
 
     Args:
         credentials: Dictionary of credentials to save.
 
     Raises:
-        OSError: If directory or file cannot be created/written.
+        KeychainAccessError: If credentials cannot be stored.
     """
-    auth_file = get_auth_file_path()
-    auth_file.parent.mkdir(parents=True, exist_ok=True)
-
-    with auth_file.open("w", encoding="utf-8") as f:
-        json.dump(credentials, f, indent=2)
+    for key, value in credentials.items():
+        _backend.set_credential(key, value)
 
 
 def save_credential(key: str, value: str) -> None:
-    """Save a single credential, preserving existing credentials.
+    """Save a single credential to the backend.
 
     Args:
         key: The credential key (e.g., "anthropic_api_key").
         value: The credential value.
 
     Raises:
-        OSError: If directory or file cannot be created/written.
-        json.JSONDecodeError: If existing file contains invalid JSON.
+        KeychainAccessError: If the credential cannot be stored.
     """
-    credentials = load_credentials()
-    credentials[key] = value
-    save_credentials(credentials)
+    _backend.set_credential(key, value)
+
+
+def delete_credential(key: str) -> None:
+    """Delete a credential from the backend.
+
+    Args:
+        key: The credential key to delete.
+
+    Raises:
+        KeychainAccessError: If the credential cannot be deleted.
+    """
+    _backend.delete_credential(key)

@@ -4,18 +4,17 @@ These tests use hypothesis to verify universal properties across all inputs.
 """
 
 import json
-import tempfile
-from pathlib import Path
-from unittest.mock import patch
 
 from hypothesis import given, settings, strategies as st
 
+from den import auth_storage
 from den.auth_storage import (
     load_credentials,
     save_credential,
     save_credentials,
 )
 from den.commands.auth import validate_api_key
+from den.keychain_backend import InMemoryBackend
 
 
 # Strategy for generating valid credential keys (non-empty strings without control chars)
@@ -64,6 +63,29 @@ def test_property_credential_serialization_round_trip(credentials: dict[str, str
 
 
 @settings(max_examples=100)
+@given(credentials=credentials_dict_strategy)
+def test_property_bulk_save_and_load_consistency(credentials: dict[str, str]):
+    """**Feature: keychain-storage, Property 3: Bulk Save and Load Consistency**
+
+    *For any* dictionary of credentials, saving them with save_credentials and then
+    calling load_credentials SHALL return a dictionary containing all the saved
+    credentials with their exact values.
+
+    **Validates: Requirements 2.2, 2.3**
+    """
+    # Use InMemoryBackend for testing
+    backend = InMemoryBackend()
+    auth_storage.set_backend(backend)
+
+    # Save all credentials
+    save_credentials(credentials)
+
+    # Load and verify
+    loaded = load_credentials()
+    assert loaded == credentials
+
+
+@settings(max_examples=100)
 @given(
     existing_credentials=credentials_dict_strategy,
     new_key=credential_key_strategy,
@@ -76,36 +98,35 @@ def test_property_credential_merge_preserves_existing_keys(
 ):
     """**Feature: auth-login, Property 2: Credential merge preserves existing keys**
 
-    *For any* existing auth.json content and any new credential being saved,
+    *For any* existing credentials and any new credential being saved,
     the save operation SHALL preserve all existing keys while adding or
     updating the new key.
 
     **Validates: Requirements 3.4**
     """
-    with tempfile.TemporaryDirectory() as tmpdir:
-        auth_file = Path(tmpdir) / "auth.json"
+    # Use InMemoryBackend for testing
+    backend = InMemoryBackend()
+    auth_storage.set_backend(backend)
 
-        # Patch get_auth_file_path to use our temp file
-        with patch("den.auth_storage.get_auth_file_path", return_value=auth_file):
-            # Set up existing credentials
-            if existing_credentials:
-                save_credentials(existing_credentials)
+    # Set up existing credentials
+    if existing_credentials:
+        save_credentials(existing_credentials)
 
-            # Save a new credential
-            save_credential(new_key, new_value)
+    # Save a new credential
+    save_credential(new_key, new_value)
 
-            # Load and verify
-            result = load_credentials()
+    # Load and verify
+    result = load_credentials()
 
-            # All existing keys should be preserved
-            for key in existing_credentials:
-                if key != new_key:
-                    assert key in result
-                    assert result[key] == existing_credentials[key]
+    # All existing keys should be preserved
+    for key in existing_credentials:
+        if key != new_key:
+            assert key in result
+            assert result[key] == existing_credentials[key]
 
-            # New key should be present with new value
-            assert new_key in result
-            assert result[new_key] == new_value
+    # New key should be present with new value
+    assert new_key in result
+    assert result[new_key] == new_value
 
 
 @settings(max_examples=100)
@@ -124,20 +145,19 @@ def test_property_credential_read_write_consistency(
 
     **Validates: Requirements 4.2, 4.3**
     """
-    with tempfile.TemporaryDirectory() as tmpdir:
-        auth_file = Path(tmpdir) / "auth.json"
+    # Use InMemoryBackend for testing
+    backend = InMemoryBackend()
+    auth_storage.set_backend(backend)
 
-        # Patch get_auth_file_path to use our temp file
-        with patch("den.auth_storage.get_auth_file_path", return_value=auth_file):
-            # Save a credential
-            save_credential(key, value)
+    # Save a credential
+    save_credential(key, value)
 
-            # Read it back
-            credentials = load_credentials()
+    # Read it back
+    credentials = load_credentials()
 
-            # The value should be exactly what we saved
-            assert key in credentials
-            assert credentials[key] == value
+    # The value should be exactly what we saved
+    assert key in credentials
+    assert credentials[key] == value
 
 
 # Strategy for generating non-empty strings (at least one non-whitespace character)

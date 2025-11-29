@@ -22,22 +22,22 @@
     - **Property 2: Delete Removes Credential**
     - **Validates: Requirements 1.3**
 
-- [ ] 3. Refactor auth_storage to use backend abstraction
-  - [ ] 3.1 Update auth_storage.py to use KeychainBackend
+- [x] 3. Refactor auth_storage to use backend abstraction
+  - [x] 3.1 Update auth_storage.py to use KeychainBackend
     - Add backend injection via `set_backend()` function
     - Default to `MacOSKeychainBackend` in production
     - Maintain existing function signatures for backward compatibility
     - _Requirements: 2.1, 2.2, 2.3_
-  - [ ] 3.2 Write property test for bulk save and load
+  - [x] 3.2 Write property test for bulk save and load
     - **Property 3: Bulk Save and Load Consistency**
     - **Validates: Requirements 2.2, 2.3**
 
-- [ ] 4. Implement error handling
-  - [ ] 4.1 Create KeychainAccessError exception class
+- [x] 4. Implement error handling
+  - [x] 4.1 Create KeychainAccessError exception class
     - Add to `src/den/keychain_backend.py`
     - Include original error and guidance message
     - _Requirements: 3.1, 3.3_
-  - [ ] 4.2 Add error handling to MacOSKeychainBackend
+  - [x] 4.2 Add error handling to MacOSKeychainBackend
     - Wrap keyring exceptions in KeychainAccessError
     - Return None for missing credentials (not an error)
     - _Requirements: 3.1, 3.2, 3.3_
