@@ -422,3 +422,88 @@ def test_property_extract_task_name_correctness(domain: str, task_name: str):
     path = Path(f"/some/dir/{filename}")
     extracted = extract_task_name(path, domain)
     assert extracted == task_name, f"Expected '{task_name}', got '{extracted}'"
+
+
+# Strategies for environment variable testing
+valid_env_var_name = st.text(
+    alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_",
+    min_size=1,
+).filter(lambda x: not x[0].isdigit())
+
+valid_env_var_value = st.text(
+    alphabet=st.characters(
+        whitelist_categories=("L", "N", "P", "S", "Zs"),
+        blacklist_characters="\x00\x01\x02\x03\x04\x05\x06\x07\x08\x0b\x0c\x0e\x0f"
+        "\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f",
+    ),
+    min_size=0,
+)
+
+valid_environment_variables = st.dictionaries(
+    keys=valid_env_var_name,
+    values=valid_env_var_value,
+    min_size=1,
+    max_size=20,
+)
+
+task_config_with_env_vars_strategy = st.builds(
+    TaskConfig,
+    label=st.tuples(valid_domain_strategy, valid_task_name_strategy).map(
+        lambda t: f"{t[0]}.{t[1]}"
+    ),
+    program_arguments=valid_program_arguments,
+    start_interval=st.integers(min_value=1, max_value=86400),
+    run_at_load=st.booleans(),
+    environment_variables=valid_environment_variables,
+)
+
+
+@settings(max_examples=100)
+@given(config=task_config_with_env_vars_strategy)
+def test_property_env_vars_round_trip(config: TaskConfig):
+    """**Feature: plist-environment-variables, Property 1: Environment Variables Round-Trip Consistency**
+
+    *For any* valid TaskConfig with a non-empty environment_variables dict, generating a plist XML
+    string and then parsing it back should produce a TaskConfig with equivalent environment_variables
+    content, including preservation of special characters in values.
+
+    **Validates: Requirements 1.1, 1.2, 1.4, 3.1, 3.2**
+    """
+    xml_content = generate_plist(config)
+    parsed_config = parse_plist(xml_content)
+
+    assert parsed_config.environment_variables == config.environment_variables
+
+
+@settings(max_examples=100)
+@given(
+    config=st.builds(
+        TaskConfig,
+        label=st.tuples(valid_domain_strategy, valid_task_name_strategy).map(
+            lambda t: f"{t[0]}.{t[1]}"
+        ),
+        program_arguments=valid_program_arguments,
+        start_interval=st.integers(min_value=1, max_value=86400),
+        run_at_load=st.booleans(),
+        environment_variables=st.none()
+        | st.dictionaries(
+            keys=valid_env_var_name, values=valid_env_var_value, max_size=0
+        ),
+    )
+)
+def test_property_empty_env_vars_omitted(config: TaskConfig):
+    """**Feature: plist-environment-variables, Property 2: Empty Environment Variables Omission**
+
+    *For any* valid TaskConfig where environment_variables is None or an empty dict, the generated
+    plist XML should not contain the EnvironmentVariables key.
+
+    **Validates: Requirements 1.3**
+    """
+    xml_content = generate_plist(config)
+
+    # Verify EnvironmentVariables key is not in the XML
+    assert "<key>EnvironmentVariables</key>" not in xml_content
+
+    # Round trip verification
+    parsed_config = parse_plist(xml_content)
+    assert parsed_config.environment_variables is None

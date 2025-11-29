@@ -31,6 +31,7 @@ class TaskConfig:
         start_calendar_hour: Hour (0-23) for calendar-based scheduling.
         start_calendar_minute: Minute (0-59) for calendar-based scheduling.
         run_at_load: Whether to run immediately when loaded.
+        environment_variables: Dict of environment variables to set when executing.
     """
 
     label: str
@@ -39,6 +40,7 @@ class TaskConfig:
     start_calendar_hour: int | None = None
     start_calendar_minute: int | None = None
     run_at_load: bool = True
+    environment_variables: dict[str, str] | None = None
 
 
 def generate_plist(config: TaskConfig) -> str:
@@ -68,6 +70,9 @@ def generate_plist(config: TaskConfig) -> str:
         "ProgramArguments": config.program_arguments,
         "RunAtLoad": config.run_at_load,
     }
+
+    if config.environment_variables:
+        plist_dict["EnvironmentVariables"] = config.environment_variables
 
     # Add scheduling - either interval or calendar-based
     if config.start_interval is not None:
@@ -115,6 +120,7 @@ def parse_plist(content: str) -> TaskConfig:
         raise PlistParseError("Plist missing required 'ProgramArguments' key")
 
     run_at_load = plist_dict.get("RunAtLoad", True)
+    environment_variables = plist_dict.get("EnvironmentVariables")
 
     # Extract scheduling
     start_interval = plist_dict.get("StartInterval")
@@ -133,4 +139,5 @@ def parse_plist(content: str) -> TaskConfig:
         start_calendar_hour=start_calendar_hour,
         start_calendar_minute=start_calendar_minute,
         run_at_load=run_at_load,
+        environment_variables=environment_variables,
     )
