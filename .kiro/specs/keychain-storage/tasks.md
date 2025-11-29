@@ -1,6 +1,6 @@
 # Implementation Plan
 
-- [ ] 1. Add keyring dependency and create backend protocol
+- [x] 1. Add keyring dependency and create backend protocol
   - [x] 1.1 Add keyring to project dependencies in pyproject.toml
     - Add `keyring>=24.0.0` to the dependencies list
     - _Requirements: 1.1_
@@ -9,16 +9,16 @@
     - Implement `InMemoryBackend` class for testing
     - _Requirements: 5.1, 5.2_
 
-- [ ] 2. Implement MacOSKeychainBackend
-  - [ ] 2.1 Create MacOSKeychainBackend class using keyring library
+- [x] 2. Implement MacOSKeychainBackend
+  - [x] 2.1 Create MacOSKeychainBackend class using keyring library
     - Implement `get_credential`, `set_credential`, `delete_credential`, `list_credentials`
     - Use service name "den-cli" for all operations
     - Implement credential registry for listing credentials
     - _Requirements: 1.1, 1.2, 1.3, 1.4_
-  - [ ] 2.2 Write property test for credential round-trip
+  - [x] 2.2 Write property test for credential round-trip
     - **Property 1: Credential Round-Trip Consistency**
     - **Validates: Requirements 1.1, 1.2**
-  - [ ] 2.3 Write property test for delete removes credential
+  - [x] 2.3 Write property test for delete removes credential
     - **Property 2: Delete Removes Credential**
     - **Validates: Requirements 1.3**
 
