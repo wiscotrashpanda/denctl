@@ -4,7 +4,7 @@
   - [x] 1.1 Add keyring to project dependencies in pyproject.toml
     - Add `keyring>=24.0.0` to the dependencies list
     - _Requirements: 1.1_
-  - [ ] 1.2 Create KeychainBackend protocol and InMemoryBackend for testing
+  - [x] 1.2 Create KeychainBackend protocol and InMemoryBackend for testing
     - Create `src/den/keychain_backend.py` with Protocol definition
     - Implement `InMemoryBackend` class for testing
     - _Requirements: 5.1, 5.2_
