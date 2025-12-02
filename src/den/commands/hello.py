@@ -17,3 +17,16 @@ def hello(
     name: The name to include in the greeting. Defaults to "World".
   """
   typer.echo(f"Hello, {name}!")
+
+
+def hello_again(
+  name: str = typer.Option("World", "--name", "-n", help="Name to greet"),
+) -> None:
+  """Say hello again to someone.
+
+  Outputs a greeting message to the console in the format "Hello again, {name}!".
+
+  Args:
+    name: The name to include in the greeting. Defaults to "World".
+  """
+  typer.echo(f"Hello again, {name}!")

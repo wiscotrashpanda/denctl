@@ -8,7 +8,7 @@ import typer
 from den import __version__
 from den.commands.auth import auth_app
 from den.commands.brew import brew_app
-from den.commands.hello import hello
+from den.commands.hello import hello, hello_again
 from den.commands.launchctl import launchctl_app
 
 app = typer.Typer(
@@ -19,6 +19,7 @@ app = typer.Typer(
 
 # Register commands
 app.command()(hello)
+app.command(name="hello-again")(hello_again)
 app.add_typer(auth_app, name="auth")
 app.add_typer(brew_app, name="brew")
 app.add_typer(launchctl_app, name="launchctl")

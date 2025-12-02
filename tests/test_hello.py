@@ -59,3 +59,24 @@ def test_hello_help_shows_name_option():
   assert result.exit_code == 0
   assert "--name" in result.output
   assert "Name to greet" in result.output
+
+
+def test_hello_again_default_output():
+  """Test that den hello-again outputs 'Hello again, World!' by default."""
+  result = runner.invoke(app, ["hello-again"])
+  assert result.exit_code == 0
+  assert "Hello again, World!" in result.output
+
+
+def test_hello_again_custom_name():
+  """Test that den hello-again --name outputs the custom name."""
+  result = runner.invoke(app, ["hello-again", "--name", "Alice"])
+  assert result.exit_code == 0
+  assert "Hello again, Alice!" in result.output
+
+
+def test_hello_again_appears_in_help():
+  """Test that hello-again command appears in --help output."""
+  result = runner.invoke(app, ["--help"])
+  assert result.exit_code == 0
+  assert "hello-again" in result.output
