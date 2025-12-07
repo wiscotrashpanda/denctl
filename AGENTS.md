@@ -21,11 +21,11 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 ## Build, Lint, & Test
 
-- **Install:** `pip install -e ".[dev]"` to install with dev dependencies.
-- **Test:** Run all tests with `pytest`.
-- **Single Test:** `pytest tests/test_hello.py::test_hello_default_output`
+- **Install:** `uv pip install -e ".[dev]"` to install with dev dependencies.
+- **Test:** Run all tests with `uv run pytest`.
+- **Single Test:** `uv run pytest tests/test_hello.py::test_hello_default_output`
 - **Lint:** Follow standard Python PEP 8. Type hints are required (mypy compatible).
-- **Run:** `python -m den` or install via `pip install -e .` and run `den`.
+- **Run:** `uv run den` or install via `uv pip install -e .` and run `den`.
 
 ## Code Style & Conventions
 
